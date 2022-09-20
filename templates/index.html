@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta charset="UTF-8">
+    <title>index</title>
+</head>
+<body>
+<script src="/static/js/jquery-3.6.1.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="/static/css/bootstrap.min.css">
+<div class="container mt-3">
+
+    <form id="form1">
+        <div class="row">
+            <div class="col">
+<!--                <input type="text" class="form-control" placeholder="Enter email" name="email">-->
+                <input class="form-control" type="file" name="file">
+
+            </div>
+            <div class="col">
+                <!--                <input type="text" class="form-control" placeholder="Enter email" name="email">-->
+                <input class="form-control" type="password" name="key" placeholder="key">
+
+            </div>
+            <div class="col">
+                <input type="button" value="上传" class="btn btn-primary" onclick="btn()" />
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<script>
+
+    function btn() {
+        var form = document.getElementById("form1");
+        var formData = new FormData(form);
+        console.log(formData);
+        $.ajax({
+            url: "/upload1",
+            method: "POST",
+            data: formData,
+            async: false,//同步上传
+            cache: false,//上传文件无需缓存
+            processData: false, // 不处理数据
+            contentType: false, // 不设置内容类型
+            success: function (result) {
+                alert(JSON.stringify(result));
+                location.reload();
+            },
+            error: function (result){
+                alert("操作失败");
+            }
+        });
+    }
+
+
+</script>
+<div class="container mt-3">
+    <ul class="list-group">
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-md-1 col-sm-1">
+                    序号
+                </div>
+                <div class="col-md-7">
+                    文件名
+                </div>
+                <div class="col-md-2">
+                   文件大小
+                </div>
+                <div class="col-md-2">
+                    操作
+                </div>
+            </div>
+        </li>
+        {{range $index,$value := .result}}
+        <li class="list-group-item">
+            <div class="row">
+                <div class="col-md-1 col-sm-1">
+                    {{$index}}
+                </div>
+                <div class="col-md-7 col-sm-7">
+                    <a href="./download?file_id={{$value.Id}}">{{$value.FileName}}</a>
+                </div>
+                <div class="col-md-2 col-sm-2">
+                    <span>{{$value.FileSize}}MB</span>
+                </div>
+                <div class="col-md-2 col-sm-2">
+                    <button class="btn btn-danger btn-sm" onclick="delete1('{{$value.Id}}')">删除</button>
+                </div>
+            </div>
+        </li>
+        {{end}}
+    </ul>
+</div>
+<script type="application/javascript">
+    function delete1(id){
+        var key = prompt("key:", '');
+        if (key != null) {
+            $.ajax({
+                url: "/delete?id="+id+"&key="+key,
+                method: "get",
+                async: false,//同步上传
+                cache: false,//上传文件无需缓存
+                processData: false, // 不处理数据
+                contentType: false, // 不设置内容类型
+                success: function (result) {
+                    alert(JSON.stringify(result));
+                    location.reload();
+                },
+                error: function (result){
+                    alert("操作失败");
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>
